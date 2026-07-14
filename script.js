@@ -234,15 +234,10 @@ const meoPosition =
 // =====================================================
 
 function createSatellite(
-
   name,
-
   position,
-
   color,
-
   labelColor
-
 ) {
 
   return viewer.entities.add({
@@ -252,19 +247,22 @@ function createSatellite(
     position: position,
 
 
-    point: {
+    billboard: {
 
-      pixelSize: 22,
+      image: "satellite.png",
 
-      color: color,
+      width: 45,
 
-      outlineColor: Cesium.Color.WHITE,
+      height: 45,
 
-      outlineWidth: 3,
+      verticalOrigin:
+        Cesium.VerticalOrigin.CENTER,
+
+      horizontalOrigin:
+        Cesium.HorizontalOrigin.CENTER,
 
       disableDepthTestDistance:
         Number.POSITIVE_INFINITY
-
     },
 
 
@@ -292,7 +290,7 @@ function createSatellite(
       pixelOffset:
         new Cesium.Cartesian2(
           0,
-          -40
+          -45
         ),
 
       horizontalOrigin:
@@ -303,11 +301,11 @@ function createSatellite(
 
       disableDepthTestDistance:
         Number.POSITIVE_INFINITY
-
     }
 
   });
 
+}
 }
 
 
