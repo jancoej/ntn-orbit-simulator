@@ -1,6 +1,6 @@
 // =====================================================
 // NTN ORBIT SIMULATOR
-// EARTH + LEO ORBIT + VISIBLE SATELLITE
+// EARTH + LEO ORBIT + MOVING SATELLITE
 // =====================================================
 
 
@@ -21,7 +21,7 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
 
 
 // -----------------------------------------------------
-// 2. SPACE APPEARANCE
+// 2. SPACE AND EARTH APPEARANCE
 // -----------------------------------------------------
 
 viewer.scene.backgroundColor = Cesium.Color.BLACK;
@@ -32,8 +32,7 @@ viewer.scene.globe.enableLighting = true;
 // 3. LEO ORBIT
 // =====================================================
 
-// Temporary altitude for better visualization.
-// Later we will change it to 550 km.
+// Temporary altitude for visualization
 const LEO_ALTITUDE = 2000000; // 2,000 km
 
 const leoOrbitPositions = [];
@@ -42,25 +41,30 @@ const leoOrbitPositions = [];
 // Create complete equatorial orbit
 for (let longitude = -180; longitude <= 180; longitude += 1) {
 
-  const position = Cesium.Cartesian3.fromDegrees(
-    longitude,
-    0,
-    LEO_ALTITUDE
+  leoOrbitPositions.push(
+    Cesium.Cartesian3.fromDegrees(
+      longitude,
+      0,
+      LEO_ALTITUDE
+    )
   );
 
-  leoOrbitPositions.push(position);
 }
 
 
-// Draw LEO orbit
+// Draw orbit
 const leoOrbit = viewer.entities.add({
 
   name: "LEO Orbit",
 
   polyline: {
+
     positions: leoOrbitPositions,
+
     width: 5,
+
     material: Cesium.Color.CYAN,
+
     arcType: Cesium.ArcType.NONE
   }
 
@@ -68,29 +72,49 @@ const leoOrbit = viewer.entities.add({
 
 
 // =====================================================
-// 4. SATELLITE
+// 4. MOVING SATELLITE
 // =====================================================
 
-// Satellite position on the orbit
-const SATELLITE_LONGITUDE = -30;
-const SATELLITE_LATITUDE = 0;
+// Initial satellite longitude
+let satelliteLongitude = -30;
 
 
-// Create satellite marker
+// Satellite speed
+// Increase this value to make it move faster
+const SATELLITE_SPEED = 0.05;
+
+
+// Time of previous animation frame
+let previousTime = performance.now();
+
+
+// Dynamic position
+const satellitePosition =
+  new Cesium.CallbackPositionProperty(
+    function () {
+
+      return Cesium.Cartesian3.fromDegrees(
+        satelliteLongitude,
+        0,
+        LEO_ALTITUDE
+      );
+
+    },
+    false
+  );
+
+
+// Create moving satellite
 const leoSatellite = viewer.entities.add({
 
   name: "LEO Satellite",
 
-  position: Cesium.Cartesian3.fromDegrees(
-    SATELLITE_LONGITUDE,
-    SATELLITE_LATITUDE,
-    LEO_ALTITUDE
-  ),
+  position: satellitePosition,
+
 
   point: {
 
-    // Very large temporarily so we can clearly see it
-    pixelSize: 35,
+    pixelSize: 30,
 
     color: Cesium.Color.YELLOW,
 
@@ -98,9 +122,10 @@ const leoSatellite = viewer.entities.add({
 
     outlineWidth: 5,
 
-    // Keep point visible
-    disableDepthTestDistance: Number.POSITIVE_INFINITY
+    disableDepthTestDistance:
+      Number.POSITIVE_INFINITY
   },
+
 
   label: {
 
@@ -114,47 +139,93 @@ const leoSatellite = viewer.entities.add({
 
     outlineWidth: 3,
 
-    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+    style:
+      Cesium.LabelStyle.FILL_AND_OUTLINE,
 
     showBackground: true,
 
-    backgroundColor: Cesium.Color.BLACK.withAlpha(0.8),
+    backgroundColor:
+      Cesium.Color.BLACK.withAlpha(0.8),
 
-    pixelOffset: new Cesium.Cartesian2(0, -50),
+    pixelOffset:
+      new Cesium.Cartesian2(0, -50),
 
-    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+    horizontalOrigin:
+      Cesium.HorizontalOrigin.CENTER,
 
-    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    verticalOrigin:
+      Cesium.VerticalOrigin.BOTTOM,
 
-    disableDepthTestDistance: Number.POSITIVE_INFINITY
+    disableDepthTestDistance:
+      Number.POSITIVE_INFINITY
   }
 
 });
 
 
 // =====================================================
-// 5. CAMERA POSITION
+// 5. SATELLITE ANIMATION
 // =====================================================
 
-// Important:
-// We do NOT use viewer.zoomTo() here because it was
-// placing the camera almost directly above the pole.
+function animateSatellite(currentTime) {
+
+  // Calculate elapsed time
+  const deltaTime =
+    currentTime - previousTime;
+
+  previousTime = currentTime;
+
+
+  // Move satellite
+  satelliteLongitude +=
+    SATELLITE_SPEED * deltaTime;
+
+
+  // Reset longitude after complete orbit
+  if (satelliteLongitude > 180) {
+
+    satelliteLongitude = -180;
+
+  }
+
+
+  // Request next animation frame
+  requestAnimationFrame(
+    animateSatellite
+  );
+
+}
+
+
+// Start animation
+requestAnimationFrame(
+  animateSatellite
+);
+
+
+// =====================================================
+// 6. CAMERA POSITION
+// =====================================================
 
 viewer.camera.setView({
 
-  destination: Cesium.Cartesian3.fromDegrees(
-    -30,        // Longitude
-    15,         // Latitude
-    22000000    // Camera distance
-  ),
+  destination:
+    Cesium.Cartesian3.fromDegrees(
+      -30,
+      15,
+      22000000
+    ),
 
   orientation: {
 
-    heading: Cesium.Math.toRadians(0),
+    heading:
+      Cesium.Math.toRadians(0),
 
-    pitch: Cesium.Math.toRadians(-90),
+    pitch:
+      Cesium.Math.toRadians(-90),
 
     roll: 0
+
   }
 
 });
