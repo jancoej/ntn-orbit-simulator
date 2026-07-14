@@ -1,30 +1,66 @@
 // Create the Cesium 3D viewer
 const viewer = new Cesium.Viewer("cesiumContainer", {
-
-// Hide unnecessary controls for the moment
-animation: false,
-timeline: false,
-geocoder: false,
-homeButton: true,
-sceneModePicker: false,
-navigationHelpButton: false,
-fullscreenButton: true,
-
-// Basic globe
-baseLayerPicker: true
+  animation: false,
+  timeline: false,
+  geocoder: false,
+  homeButton: true,
+  sceneModePicker: false,
+  navigationHelpButton: false,
+  fullscreenButton: true,
+  baseLayerPicker: true
 });
 
-// Set an initial camera position
+// Initial camera position
 viewer.camera.setView({
-destination: Cesium.Cartesian3.fromDegrees(
-0,          // Longitude
-15,         // Latitude
-25000000    // Camera altitude
-)
+  destination: Cesium.Cartesian3.fromDegrees(
+    0,
+    15,
+    25000000
+  )
 });
 
-// Improve the visual appearance of space
+// Space background
 viewer.scene.backgroundColor = Cesium.Color.BLACK;
 
-// Enable lighting on the globe
+// Enable Earth lighting
 viewer.scene.globe.enableLighting = true;
+
+
+// =====================================================
+// LEO ORBIT
+// =====================================================
+
+const EARTH_RADIUS = 6371000; // meters
+const LEO_ALTITUDE = 550000;  // 550 km
+
+const leoOrbitPositions = [];
+
+// Generate a complete circular orbit
+for (let angle = 0; angle <= 360; angle += 2) {
+
+  leoOrbitPositions.push(
+    Cesium.Cartesian3.fromDegrees(
+      angle,          // Longitude
+      0,              // Latitude
+      LEO_ALTITUDE    // Altitude above Earth
+    )
+  );
+
+}
+
+// Draw the LEO orbit
+viewer.entities.add({
+
+  name: "LEO Orbit",
+
+  polyline: {
+    positions: leoOrbitPositions,
+
+    width: 3,
+
+    material: Cesium.Color.CYAN,
+
+    arcType: Cesium.ArcType.NONE
+  }
+
+});
