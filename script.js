@@ -1,7 +1,7 @@
 // =====================================================
 // NTN ORBIT SIMULATOR
 // EARTH + LEO + MEO + GEO
-// MOVING LEO SATELLITE
+// THREE SATELLITES
 // =====================================================
 
 
@@ -26,6 +26,7 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
 // -----------------------------------------------------
 
 viewer.scene.backgroundColor = Cesium.Color.BLACK;
+
 viewer.scene.globe.enableLighting = true;
 
 
@@ -33,7 +34,7 @@ viewer.scene.globe.enableLighting = true;
 // 3. ORBIT ALTITUDES
 // =====================================================
 
-// meters
+// Altitudes in meters
 
 const LEO_ALTITUDE = 2000000;   // 2,000 km
 const MEO_ALTITUDE = 10000000;  // 10,000 km
@@ -41,10 +42,15 @@ const GEO_ALTITUDE = 35786000;  // 35,786 km
 
 
 // =====================================================
-// 4. FUNCTION TO CREATE AN ORBIT
+// 4. CREATE ORBIT FUNCTION
 // =====================================================
 
-function createOrbit(name, altitude, color, width = 4) {
+function createOrbit(
+  name,
+  altitude,
+  color,
+  width = 4
+) {
 
   const positions = [];
 
@@ -55,14 +61,17 @@ function createOrbit(name, altitude, color, width = 4) {
   ) {
 
     positions.push(
+
       Cesium.Cartesian3.fromDegrees(
         longitude,
         0,
         altitude
       )
+
     );
 
   }
+
 
   return viewer.entities.add({
 
@@ -77,6 +86,7 @@ function createOrbit(name, altitude, color, width = 4) {
       material: color,
 
       arcType: Cesium.ArcType.NONE
+
     }
 
   });
@@ -85,152 +95,353 @@ function createOrbit(name, altitude, color, width = 4) {
 
 
 // =====================================================
-// 5. CREATE LEO, MEO AND GEO ORBITS
+// 5. CREATE THREE ORBITS
 // =====================================================
 
+
+// LEO
 const leoOrbit = createOrbit(
+
   "LEO Orbit",
+
   LEO_ALTITUDE,
+
   Cesium.Color.CYAN,
+
   5
+
 );
 
 
+// MEO
 const meoOrbit = createOrbit(
+
   "MEO Orbit",
+
   MEO_ALTITUDE,
+
   Cesium.Color.ORANGE,
+
   5
+
 );
 
 
+// GEO
 const geoOrbit = createOrbit(
+
   "GEO Orbit",
+
   GEO_ALTITUDE,
+
   Cesium.Color.LIME,
+
   5
+
 );
 
 
 // =====================================================
-// 6. MOVING LEO SATELLITE
+// 6. SATELLITE POSITIONS
 // =====================================================
 
-let satelliteLongitude = -30;
+
+// LEO satellite
+let leoLongitude = -30;
 
 
-// Movement speed
-const SATELLITE_SPEED = 0.05;
+// MEO satellite
+let meoLongitude = 80;
 
 
-// Previous animation time
-let previousTime = performance.now();
+// GEO satellite
+const geoLongitude = 20;
 
 
-// Dynamic position
-const satellitePosition =
+// =====================================================
+// 7. SATELLITE SPEEDS
+// =====================================================
+
+
+// LEO moves fastest
+const LEO_SPEED = 0.05;
+
+
+// MEO moves slower
+const MEO_SPEED = 0.015;
+
+
+// GEO remains fixed relative to Earth
+
+
+// =====================================================
+// 8. DYNAMIC LEO POSITION
+// =====================================================
+
+const leoPosition =
+
   new Cesium.CallbackPositionProperty(
 
     function () {
 
       return Cesium.Cartesian3.fromDegrees(
-        satelliteLongitude,
+
+        leoLongitude,
+
         0,
+
         LEO_ALTITUDE
+
       );
 
     },
 
     false
+
   );
 
 
-// Create satellite
-const leoSatellite = viewer.entities.add({
+// =====================================================
+// 9. DYNAMIC MEO POSITION
+// =====================================================
 
-  name: "LEO Satellite",
+const meoPosition =
 
-  position: satellitePosition,
+  new Cesium.CallbackPositionProperty(
 
+    function () {
 
-  point: {
+      return Cesium.Cartesian3.fromDegrees(
 
-    pixelSize: 25,
+        meoLongitude,
 
-    color: Cesium.Color.YELLOW,
+        0,
 
-    outlineColor: Cesium.Color.RED,
+        MEO_ALTITUDE
 
-    outlineWidth: 4,
+      );
 
-    disableDepthTestDistance:
-      Number.POSITIVE_INFINITY
+    },
 
-  },
+    false
 
-
-  label: {
-
-    text: "LEO SATELLITE",
-
-    font: "bold 18px Arial",
-
-    fillColor: Cesium.Color.YELLOW,
-
-    outlineColor: Cesium.Color.BLACK,
-
-    outlineWidth: 3,
-
-    style:
-      Cesium.LabelStyle.FILL_AND_OUTLINE,
-
-    showBackground: true,
-
-    backgroundColor:
-      Cesium.Color.BLACK.withAlpha(0.8),
-
-    pixelOffset:
-      new Cesium.Cartesian2(0, -45),
-
-    horizontalOrigin:
-      Cesium.HorizontalOrigin.CENTER,
-
-    verticalOrigin:
-      Cesium.VerticalOrigin.BOTTOM,
-
-    disableDepthTestDistance:
-      Number.POSITIVE_INFINITY
-
-  }
-
-});
+  );
 
 
 // =====================================================
-// 7. SATELLITE ANIMATION
+// 10. CREATE SATELLITE FUNCTION
 // =====================================================
 
-function animateSatellite(currentTime) {
+function createSatellite(
+
+  name,
+
+  position,
+
+  color,
+
+  labelColor
+
+) {
+
+  return viewer.entities.add({
+
+    name: name,
+
+    position: position,
+
+
+    point: {
+
+      pixelSize: 22,
+
+      color: color,
+
+      outlineColor: Cesium.Color.WHITE,
+
+      outlineWidth: 3,
+
+      disableDepthTestDistance:
+        Number.POSITIVE_INFINITY
+
+    },
+
+
+    label: {
+
+      text: name,
+
+      font: "bold 17px Arial",
+
+      fillColor: labelColor,
+
+      outlineColor:
+        Cesium.Color.BLACK,
+
+      outlineWidth: 3,
+
+      style:
+        Cesium.LabelStyle.FILL_AND_OUTLINE,
+
+      showBackground: true,
+
+      backgroundColor:
+        Cesium.Color.BLACK.withAlpha(0.8),
+
+      pixelOffset:
+        new Cesium.Cartesian2(
+          0,
+          -40
+        ),
+
+      horizontalOrigin:
+        Cesium.HorizontalOrigin.CENTER,
+
+      verticalOrigin:
+        Cesium.VerticalOrigin.BOTTOM,
+
+      disableDepthTestDistance:
+        Number.POSITIVE_INFINITY
+
+    }
+
+  });
+
+}
+
+
+// =====================================================
+// 11. CREATE LEO SATELLITE
+// =====================================================
+
+const leoSatellite = createSatellite(
+
+  "LEO SATELLITE",
+
+  leoPosition,
+
+  Cesium.Color.YELLOW,
+
+  Cesium.Color.CYAN
+
+);
+
+
+// =====================================================
+// 12. CREATE MEO SATELLITE
+// =====================================================
+
+const meoSatellite = createSatellite(
+
+  "MEO SATELLITE",
+
+  meoPosition,
+
+  Cesium.Color.ORANGE,
+
+  Cesium.Color.ORANGE
+
+);
+
+
+// =====================================================
+// 13. CREATE GEO SATELLITE
+// =====================================================
+
+const geoPosition =
+
+  Cesium.Cartesian3.fromDegrees(
+
+    geoLongitude,
+
+    0,
+
+    GEO_ALTITUDE
+
+  );
+
+
+const geoSatellite = createSatellite(
+
+  "GEO SATELLITE",
+
+  geoPosition,
+
+  Cesium.Color.LIME,
+
+  Cesium.Color.LIME
+
+);
+
+
+// =====================================================
+// 14. ANIMATION
+// =====================================================
+
+let previousTime =
+  performance.now();
+
+
+function animateSatellites(
+  currentTime
+) {
 
   const deltaTime =
-    currentTime - previousTime;
 
-  previousTime = currentTime;
-
-
-  satelliteLongitude +=
-    SATELLITE_SPEED * deltaTime;
+    currentTime -
+    previousTime;
 
 
-  if (satelliteLongitude > 180) {
+  previousTime =
+    currentTime;
 
-    satelliteLongitude = -180;
+
+  // ------------------------
+  // Move LEO
+  // ------------------------
+
+  leoLongitude +=
+
+    LEO_SPEED *
+    deltaTime;
+
+
+  // ------------------------
+  // Move MEO
+  // ------------------------
+
+  meoLongitude +=
+
+    MEO_SPEED *
+    deltaTime;
+
+
+  // ------------------------
+  // Longitude reset
+  // ------------------------
+
+  if (
+    leoLongitude > 180
+  ) {
+
+    leoLongitude = -180;
 
   }
 
 
+  if (
+    meoLongitude > 180
+  ) {
+
+    meoLongitude = -180;
+
+  }
+
+
+  // Next frame
+
   requestAnimationFrame(
-    animateSatellite
+    animateSatellites
   );
 
 }
@@ -239,26 +450,30 @@ function animateSatellite(currentTime) {
 // Start animation
 
 requestAnimationFrame(
-  animateSatellite
+  animateSatellites
 );
 
 
 // =====================================================
-// 8. CAMERA POSITION
-// =====================================================
-
-// Camera far enough to see GEO orbit
-// =====================================================
-// 8. CAMERA - SHOW ALL ORBITS
+// 15. CAMERA
 // =====================================================
 
 viewer.flyTo(
+
   [
+
     leoOrbit,
+
     meoOrbit,
+
     geoOrbit
+
   ],
+
   {
+
     duration: 3
+
   }
+
 );
