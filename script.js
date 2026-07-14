@@ -26,26 +26,7 @@ viewer.scene.backgroundColor = Cesium.Color.BLACK;
 viewer.scene.globe.enableLighting = true;
 
 
-// =====================================================
-// LEO ORBIT - TEST VISIBLE
-// =====================================================
-
-// Para la primera prueba usamos 2,000 km
-// para confirmar claramente que la línea funciona.
-const LEO_ALTITUDE = 2000000;
-
-const leoOrbitPositions = [];
-
-for (let longitude = -180; longitude <= 180; longitude += 1) {
-  leoOrbitPositions.push(
-    Cesium.Cartesian3.fromDegrees(
-      longitude,
-      0,
-      LEO_ALTITUDE
-    )
-  );
-}
-
+// Draw LEO orbit
 const leoOrbit = viewer.entities.add({
   name: "LEO Orbit",
 
@@ -57,5 +38,40 @@ const leoOrbit = viewer.entities.add({
   }
 });
 
-// Automatically adjust the camera to show the orbit
+
+// =====================================================
+// LEO SATELLITE
+// =====================================================
+
+const satelliteLongitude = 30;
+const satelliteLatitude = 0;
+
+const leoSatellite = viewer.entities.add({
+  name: "LEO Satellite",
+
+  position: Cesium.Cartesian3.fromDegrees(
+    satelliteLongitude,
+    satelliteLatitude,
+    LEO_ALTITUDE
+  ),
+
+  point: {
+    pixelSize: 16,
+    color: Cesium.Color.YELLOW,
+    outlineColor: Cesium.Color.WHITE,
+    outlineWidth: 3
+  },
+
+  label: {
+    text: "LEO Satellite",
+    font: "16px Arial",
+    fillColor: Cesium.Color.WHITE,
+    showBackground: true,
+    backgroundColor: Cesium.Color.BLACK.withAlpha(0.7),
+    pixelOffset: new Cesium.Cartesian2(0, -30)
+  }
+});
+
+
+// Adjust camera to show the orbit
 viewer.zoomTo(leoOrbit);
