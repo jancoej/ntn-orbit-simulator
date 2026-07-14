@@ -20,7 +20,6 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
   baseLayerPicker: true
 });
 
-image: "satellite.png"
 
 // -----------------------------------------------------
 // 2. SPACE AND EARTH
@@ -304,8 +303,6 @@ function createSatellite(
     }
 
   });
-
-}
 }
 
 
