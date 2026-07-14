@@ -477,3 +477,101 @@ viewer.flyTo(
   }
 
 );
+
+// =====================================================
+// 16. ORBIT NAVIGATION BUTTONS
+// =====================================================
+
+
+// -----------------------------------------------------
+// ALL ORBITS
+// -----------------------------------------------------
+
+document
+  .getElementById("btnAll")
+  .addEventListener("click", function () {
+
+    viewer.flyTo(
+      [
+        leoOrbit,
+        meoOrbit,
+        geoOrbit
+      ],
+      {
+        duration: 2
+      }
+    );
+
+  });
+
+
+// -----------------------------------------------------
+// LEO VIEW
+// -----------------------------------------------------
+
+document
+  .getElementById("btnLeo")
+  .addEventListener("click", function () {
+
+    viewer.camera.flyTo({
+
+      destination:
+        Cesium.Cartesian3.fromDegrees(
+          leoLongitude,
+          15,
+          22000000
+        ),
+
+      duration: 2
+
+    });
+
+  });
+
+
+// -----------------------------------------------------
+// MEO VIEW
+// -----------------------------------------------------
+
+document
+  .getElementById("btnMeo")
+  .addEventListener("click", function () {
+
+    viewer.camera.flyTo({
+
+      destination:
+        Cesium.Cartesian3.fromDegrees(
+          meoLongitude,
+          20,
+          40000000
+        ),
+
+      duration: 2
+
+    });
+
+  });
+
+
+// -----------------------------------------------------
+// GEO VIEW
+// -----------------------------------------------------
+
+document
+  .getElementById("btnGeo")
+  .addEventListener("click", function () {
+
+    viewer.camera.flyTo({
+
+      destination:
+        Cesium.Cartesian3.fromDegrees(
+          geoLongitude,
+          20,
+          90000000
+        ),
+
+      duration: 2
+
+    });
+
+  });
