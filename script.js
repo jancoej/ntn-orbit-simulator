@@ -27,40 +27,35 @@ viewer.scene.globe.enableLighting = true;
 
 
 // =====================================================
-// LEO ORBIT
+// LEO ORBIT - TEST VISIBLE
 // =====================================================
 
-const EARTH_RADIUS = 6371000; // meters
-const LEO_ALTITUDE = 550000;  // 550 km
+// Para la primera prueba usamos 2,000 km
+// para confirmar claramente que la línea funciona.
+const LEO_ALTITUDE = 2000000;
 
 const leoOrbitPositions = [];
 
-// Generate a complete circular orbit
-for (let angle = 0; angle <= 360; angle += 2) {
-
+for (let longitude = -180; longitude <= 180; longitude += 1) {
   leoOrbitPositions.push(
     Cesium.Cartesian3.fromDegrees(
-      angle,          // Longitude
-      0,              // Latitude
-      LEO_ALTITUDE    // Altitude above Earth
+      longitude,
+      0,
+      LEO_ALTITUDE
     )
   );
-
 }
 
-// Draw the LEO orbit
-viewer.entities.add({
-
+const leoOrbit = viewer.entities.add({
   name: "LEO Orbit",
 
   polyline: {
     positions: leoOrbitPositions,
-
-    width: 3,
-
+    width: 8,
     material: Cesium.Color.CYAN,
-
     arcType: Cesium.ArcType.NONE
   }
-
 });
+
+// Automatically adjust the camera to show the orbit
+viewer.zoomTo(leoOrbit);
