@@ -32,3 +32,54 @@ font-size: 24px;
 margin: 5px 0 0;
 color: #aaaaaa;
 }
+
+/* =====================================================
+   ORBIT CONTROLS
+===================================================== */
+
+.orbit-controls {
+  position: absolute;
+  top: 120px;
+  left: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  z-index: 20;
+}
+
+.orbit-controls button {
+  width: 90px;
+  padding: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+
+  background: rgba(5, 15, 30, 0.9);
+  color: white;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.orbit-controls button:hover {
+  transform: translateX(5px);
+  background: rgba(20, 60, 100, 0.95);
+}
+
+#btnLeo:hover {
+  color: cyan;
+}
+
+#btnMeo:hover {
+  color: orange;
+}
+
+#btnGeo:hover {
+  color: lime;
+}
