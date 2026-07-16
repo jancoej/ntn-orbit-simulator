@@ -4,7 +4,8 @@
 // THREE SATELLITES
 // =====================================================
 
-
+console.log("SCRIPT.JS LOADED CORRECTLY");
+alert("SCRIPT.JS LOADED CORRECTLY");
 // -----------------------------------------------------
 // 1. CREATE CESIUM VIEWER
 // -----------------------------------------------------
